@@ -56,4 +56,4 @@ class SupportMobileAPI(http.Controller):
         ticket_id = request_data.get("ticket_id", 0)
         if fse_id == 0 or ticket_id == 0:
             return json.dumps({"status":0, "msg":"fse or ticket id is invalid."})
-        return json.dumps(request.env['wb.mobile.request.registration'].getHelpdeskList(vals={'fse_id':fse_id, 'ticket_id':ticket_id}))
+        return json.dumps(request.env['wb.mobile.request.registration'].assignTeamMember(vals={'fse_id':fse_id, 'ticket_id':ticket_id}))
