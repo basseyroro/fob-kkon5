@@ -33,6 +33,14 @@ class SupportMobileAPI(http.Controller):
             page = 1
         return json.dumps(request.env['wb.mobile.request.registration'].getHelpdeskList(page))
 
+    @http.route('/get/assigned/helpdesk/list', type='http', auth='api_key')
+    def getAssignedHelpdeskList(self, **kwargs):
+        try:
+            page = int(kwargs.get("page", '1'))
+        except Exception as e:
+            page = 1
+        return json.dumps(request.env['wb.mobile.request.registration'].getHelpdeskList(page=page, operation="assigned_tickets"))
+
     @http.route('/get/team/list', type='http', auth='api_key')
     def getTeamList(self, **kwargs):
         try:
