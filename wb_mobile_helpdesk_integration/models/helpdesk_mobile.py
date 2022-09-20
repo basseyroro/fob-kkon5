@@ -10,6 +10,7 @@ class HelpdeskStages(models.Model):
     _inherit = "helpdesk.stage"
 
     display_in_mobile_app = fields.Boolean("Is display in mobile application?", default=False, copy=False)
+    update_from_mobile_app = fields.Boolean("Update from mobile application?", default=False, copy=False)
 
 
 class WBMobileRequestRegistration(models.Model):
@@ -62,13 +63,16 @@ class WBMobileRequestRegistration(models.Model):
             obj_list.append({'name': prd.name, 'id': prd.id, 'company_id': prd.company_id.id})
         return obj_list
 
-    def getHelpdeskList(self, page=0):
+    def getHelpdeskList(self, page=0, operation="pending_tickets"):
         helpdesk_list = []
         offset_limit = 0
         for offset in range(page):
             if offset > 0:
                 offset_limit += 50
-        for prd in self.env['helpdesk.ticket'].search([('stage_id.display_in_mobile_app', '=', True)],
+        domain = [('stage_id.display_in_mobile_app', '=', True),('stage_id.update_from_mobile_app', '=', True)]
+        if operation == "assigned_tickets":
+            domain = [('stage_id.display_in_mobile_app', '=', True), ('stage_id.update_from_mobile_app', '=', False)]
+        for prd in self.env['helpdesk.ticket'].search(domain,
                                                       offset=offset_limit, limit=50, order="id"):
             customer_detail = prd.partner_id
             area_manager_detail = prd.x_studio_many2one_field_F3tVh
@@ -168,7 +172,7 @@ class WBMobileRequestRegistration(models.Model):
         if not ticket_id:
             response_data['msg'] = "TICKET_ID key value is not found."
             return json.dumps(response_data)
-        if not ticket_id.stage_id.display_in_mobile_app:
+        if not ticket_id.stage_id.update_from_mobile_app:
             response_data['msg'] = "This ticket is not in correct state. Pls refresh the records."
             return json.dumps(response_data)
         ticket_id.write({"x_studio_fse":vals.get("fse_id")})
