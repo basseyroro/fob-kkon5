@@ -10,6 +10,7 @@ class HelpdeskStages(models.Model):
     _inherit = "helpdesk.stage"
 
     display_in_mobile_app = fields.Boolean("Is display in mobile application?", default=False, copy=False)
+    update_from_mobile_app = fields.Boolean("Update from mobile application?", default=False, copy=False)
 
 
 class WBMobileRequestRegistration(models.Model):
@@ -168,7 +169,7 @@ class WBMobileRequestRegistration(models.Model):
         if not ticket_id:
             response_data['msg'] = "TICKET_ID key value is not found."
             return json.dumps(response_data)
-        if not ticket_id.stage_id.display_in_mobile_app:
+        if not ticket_id.stage_id.update_from_mobile_app:
             response_data['msg'] = "This ticket is not in correct state. Pls refresh the records."
             return json.dumps(response_data)
         ticket_id.write({"x_studio_fse":vals.get("fse_id")})
