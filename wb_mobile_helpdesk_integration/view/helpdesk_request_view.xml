@@ -65,6 +65,7 @@
         <field name="arch" type="xml">
             <field name="sequence" position="after">
                 <field name="display_in_mobile_app" />
+                <field name="update_from_mobile_app" />
             </field>
         </field>
     </record>
