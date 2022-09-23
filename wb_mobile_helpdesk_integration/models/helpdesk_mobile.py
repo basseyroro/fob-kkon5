@@ -71,7 +71,7 @@ class WBMobileRequestRegistration(models.Model):
                 offset_limit += 50
         domain = [('stage_id.display_in_mobile_app', '=', True),('stage_id.update_from_mobile_app', '=', True)]
         if operation == "assigned_tickets":
-            domain = [('stage_id.display_in_mobile_app', '=', True), ('stage_id.update_from_mobile_app', '=', False)]
+            domain = [('stage_id.display_in_mobile_app', '=', True),('fse_id','=',self.env.user.id), ('stage_id.update_from_mobile_app', '=', False)]
         for prd in self.env['helpdesk.ticket'].search(domain,
                                                       offset=offset_limit, limit=50, order="id"):
             customer_detail = prd.partner_id
