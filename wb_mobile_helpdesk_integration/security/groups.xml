@@ -10,5 +10,8 @@
             <field name="perm_read" eval="False"/>
         </record>
 
+        <record model="res.groups" id="group_mobile_admin">
+            <field name="name">Admin Mobile</field>
+        </record>
     </data>
 </odoo>

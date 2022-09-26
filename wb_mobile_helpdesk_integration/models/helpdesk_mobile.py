@@ -122,8 +122,66 @@ class WBMobileRequestRegistration(models.Model):
                  'stage_id': prd.stage_id.id,
                  'stage_name': prd.stage_id.name,
                  })
+        return helpdesk_list
 
-
+    def getHelpdeskTicketList(self, page=0):
+        helpdesk_list = []
+        offset_limit = 0
+        for offset in range(page):
+            if offset > 0:
+                offset_limit += 50
+        domain = []
+        for prd in self.env['helpdesk.ticket'].sudo().search(domain,
+                                                      offset=offset_limit,
+                                                      limit=50, order="id"):
+            customer_detail = prd.partner_id
+            area_manager_detail = prd.x_studio_many2one_field_F3tVh
+            helpdesk_list.append({'name': prd.name,
+                 'id': prd.id,
+                 'helpdesk_number':prd.x_studio_helpdesk_id or '',
+                 'helpdesk_team_id': prd.team_id.id,
+                 'helpdesk_team_name': prd.team_id.name,
+                 'sale_id': prd.sudo().x_studio_many2one_field_fD8Y4.name,
+                 'assigned_user_id': prd.user_id.id,
+                 'assigned_user_name': prd.user_id.name,
+                 'ticket_type_id': prd.ticket_type_id.id,
+                 'ticket_type_name': prd.ticket_type_id.name,
+                 'created_by': prd.create_uid.name,
+                 'created_date': "{}".format(prd.create_date),
+                 'customer_id': customer_detail.id,
+                 'customer_name': customer_detail.name,
+                  'customer_customer_id': customer_detail.x_studio_customer_id or '',
+                  'customer_first_name': customer_detail.x_studio_first_name or '',
+                  'customer_last_name': customer_detail.x_studio_last_name or '',
+                  'customer_country_id': customer_detail.country_id.id or False,
+                  'customer_country_name': customer_detail.country_id.name or '',
+                  'customer_state_id': customer_detail.state_id.id or False,
+                  'customer_state_name': customer_detail.state_id.name or '',
+                  'customer_mobile': customer_detail.mobile or '',
+                  'customer_phone': customer_detail.phone or '',
+                  'customer_street': customer_detail.street or '',
+                  'customer_street2': customer_detail.street2 or '',
+                  'customer_zip': customer_detail.zip or '',
+                  'customer_city': customer_detail.city or '',
+                  'customer_email': customer_detail.email or '',
+                 'area_manager_id': area_manager_detail.id,
+                 'area_manager_name': area_manager_detail.name,
+                  'area_manager_country_name': area_manager_detail.partner_id.country_id.name or '',
+                  'area_manager_state_name': area_manager_detail.partner_id.state_id.name or '',
+                  'area_manager_mobile': area_manager_detail.partner_id.mobile or '',
+                  'area_manager_phone': area_manager_detail.partner_id.phone or '',
+                  'area_manager_street': area_manager_detail.partner_id.street or '',
+                  'area_manager_street2': area_manager_detail.partner_id.street2 or '',
+                  'area_manager_zip': area_manager_detail.partner_id.zip or '',
+                  'area_manager_city': area_manager_detail.partner_id.city or '',
+                  'area_manager_email': area_manager_detail.partner_id.email or '',
+                 'fse_id': prd.x_studio_fse.id,
+                 'fse_name': prd.x_studio_fse.name,
+                 'company_id': prd.company_id.id,
+                 'company_name': prd.company_id.name,
+                 'stage_id': prd.stage_id.id,
+                 'stage_name': prd.stage_id.name,
+                 })
         return helpdesk_list
 
     def getProductList(self):
