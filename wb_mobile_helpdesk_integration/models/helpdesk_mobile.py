@@ -130,7 +130,7 @@ class WBMobileRequestRegistration(models.Model):
         for offset in range(page):
             if offset > 0:
                 offset_limit += 50
-        domain = []
+        domain = [('stage_id.display_in_mobile_app', '=', True)]
         for prd in self.env['helpdesk.ticket'].sudo().search(domain,
                                                       offset=offset_limit,
                                                       limit=50, order="id"):
