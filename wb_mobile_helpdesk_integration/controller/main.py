@@ -65,7 +65,7 @@ class SupportMobileAPI(http.Controller):
         except Exception as e:
             page = 1
         if request.env.user.has_group('wb_mobile_helpdesk_integration.group_mobile_admin'):
-            return json.dumps(request.env['wb.mobile.request.registration'].getHelpdeskList(page))
+            return json.dumps(request.env['wb.mobile.request.registration'].getHelpdeskTicketList(page))
         else:
             return json.dumps({})
 
