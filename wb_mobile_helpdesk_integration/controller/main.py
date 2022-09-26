@@ -49,7 +49,7 @@ class SupportMobileAPI(http.Controller):
             page = 1
         return json.dumps(request.env['wb.mobile.request.registration'].getTeamList(page))
 
-    @http.route('/assign/team/member', type='json', auth='api_key', methods=["POST"])
+    @http.route('/get/all/tickets', type='json', auth='api_key', methods=["POST"])
     def assignTeamMember(self, **kwargs):
         request_data = json.loads(request.httprequest.data)
         fse_id = request_data.get("fse_id", 0)
@@ -57,3 +57,15 @@ class SupportMobileAPI(http.Controller):
         if fse_id == 0 or ticket_id == 0:
             return json.dumps({"status":0, "msg":"fse or ticket id is invalid."})
         return json.dumps(request.env['wb.mobile.request.registration'].assignTeamMember(vals={'fse_id':fse_id, 'ticket_id':ticket_id}))
+
+    @http.route('/get/all/tickets', type='http', auth='api_key')
+    def getHelpdeskTicketList(self, **kwargs):
+        try:
+            page = int(kwargs.get("page", '1'))
+        except Exception as e:
+            page = 1
+        if request.env.user.has_group('wb_mobile_helpdesk_integration.group_mobile_admin'):
+            return json.dumps(request.env['wb.mobile.request.registration'].getHelpdeskList(page))
+        else:
+            return json.dumps({})
+
