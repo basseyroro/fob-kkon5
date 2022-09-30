@@ -49,7 +49,7 @@ class SupportMobileAPI(http.Controller):
             page = 1
         return json.dumps(request.env['wb.mobile.request.registration'].getTeamList(page))
 
-    @http.route('/get/all/tickets', type='json', auth='api_key', methods=["POST"])
+    @http.route('/assign/team/member', type='json', auth='api_key', methods=["POST"])
     def assignTeamMember(self, **kwargs):
         request_data = json.loads(request.httprequest.data)
         fse_id = request_data.get("fse_id", 0)
