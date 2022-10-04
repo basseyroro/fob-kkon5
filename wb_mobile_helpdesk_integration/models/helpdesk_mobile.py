@@ -71,7 +71,7 @@ class WBMobileRequestRegistration(models.Model):
             if offset > 0:
                 offset_limit += 50
         for prd in self.env['helpdesk.team'].sudo().search([],offset=offset_limit, limit=50, order="id"):
-            obj_list.append({'name': prd.name, 'id': prd.id, 'company_id': prd.company_id.id})
+            obj_list.append({'name': prd.name, 'id': prd.id, 'company_id': prd.company_id.id, 'company_name': prd.company_id.name})
         return obj_list
 
     def getHelpdeskListCount(self, operation="pending_tickets"):
