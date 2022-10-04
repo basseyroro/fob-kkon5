@@ -32,7 +32,10 @@ class WBMobileRequestRegistration(models.Model):
         for offset in range(page):
             if offset > 0:
                 offset_limit += 50
-        for prd in self.env['res.partner'].sudo().search([], offset=offset_limit, limit=50, order="id"):
+        total_records = self.env['res.partner'].sudo().search([], order="id")
+        actual_records = total_records[offset_limit:50]
+        # offset = offset_limit, limit = 50,
+        for prd in actual_records:
             customer_list.append({'name':prd.display_name, 'id':prd.id, 'customer_id': prd.x_studio_customer_id or '',
                             'first_name': prd.x_studio_first_name or '',
                             'last_name': prd.x_studio_last_name or '',
@@ -46,7 +49,8 @@ class WBMobileRequestRegistration(models.Model):
                             'street2': prd.street2 or '',
                             'zip': prd.zip or '',
                             'city': prd.city or '',
-                            'email': prd.email or ''
+                            'email': prd.email or '',
+                            'total_records': len(total_records)
                             })
         return customer_list
 
