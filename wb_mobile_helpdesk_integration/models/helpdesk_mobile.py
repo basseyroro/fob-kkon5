@@ -1,9 +1,12 @@
 import logging
 import json
+from math import ceil
 # import requests
 from odoo import api, fields, models, _
 
 _logger = logging.getLogger(__name__)
+
+PAGE_LIMIT = 50
 
 
 class HelpdeskStages(models.Model):
@@ -26,16 +29,17 @@ class WBMobileRequestRegistration(models.Model):
     active = fields.Boolean("Active", default=True)
     process_message = fields.Char("Proceed Message")
 
+    def getCustomerListCount(self):
+        total_count = self.env['res.partner'].sudo().search([], count=True)
+        return {"total_records": total_count, "total_pages": ceil(total_count/PAGE_LIMIT)}
+
     def getCustomerList(self, page=0):
         customer_list = []
         offset_limit = 0
         for offset in range(page):
             if offset > 0:
                 offset_limit += 50
-        total_records = self.env['res.partner'].sudo().search([], order="id")
-        actual_records = total_records[offset_limit:50]
-        # offset = offset_limit, limit = 50,
-        for prd in actual_records:
+        for prd in self.env['res.partner'].sudo().search([], offset=offset_limit, limit=50, order="id"):
             customer_list.append({'name':prd.display_name, 'id':prd.id, 'customer_id': prd.x_studio_customer_id or '',
                             'first_name': prd.x_studio_first_name or '',
                             'last_name': prd.x_studio_last_name or '',
@@ -49,13 +53,16 @@ class WBMobileRequestRegistration(models.Model):
                             'street2': prd.street2 or '',
                             'zip': prd.zip or '',
                             'city': prd.city or '',
-                            'email': prd.email or '',
-                            'total_records': len(total_records)
+                            'email': prd.email or ''
                             })
         return customer_list
 
     def getCompanyList(self):
         return [{'name':prd.name, 'id':prd.id} for prd in self.env['res.company'].sudo().search([])]
+
+    def getHelpdeskTeamListCount(self):
+        total_count = self.env['helpdesk.team'].sudo().search([], count=True)
+        return {"total_records": total_count, "total_pages": ceil(total_count / PAGE_LIMIT)}
 
     def getHelpdeskTeamList(self, page=0):
         obj_list = []
@@ -66,6 +73,14 @@ class WBMobileRequestRegistration(models.Model):
         for prd in self.env['helpdesk.team'].sudo().search([],offset=offset_limit, limit=50, order="id"):
             obj_list.append({'name': prd.name, 'id': prd.id, 'company_id': prd.company_id.id})
         return obj_list
+
+    def getHelpdeskListCount(self, operation="pending_tickets"):
+        domain = [('stage_id.display_in_mobile_app', '=', True), ('stage_id.update_from_mobile_app', '=', True)]
+        if operation == "assigned_tickets":
+            domain = [('stage_id.display_in_mobile_app', '=', True), ('x_studio_fse', '=', self.env.user.id),
+                      ('stage_id.update_from_mobile_app', '=', False)]
+        total_count = self.env['helpdesk.ticket'].search(domain, count=True)
+        return {"total_records": total_count, "total_pages": ceil(total_count / PAGE_LIMIT)}
 
     def getHelpdeskList(self, page=0, operation="pending_tickets"):
         helpdesk_list = []
@@ -127,6 +142,11 @@ class WBMobileRequestRegistration(models.Model):
                  'stage_name': prd.stage_id.name,
                  })
         return helpdesk_list
+
+    def getHelpdeskTicketListCount(self):
+        domain = [('stage_id.display_in_mobile_app', '=', True)]
+        total_count = self.env['helpdesk.ticket'].sudo().search(domain, count=True)
+        return {"total_records": total_count, "total_pages": ceil(total_count / PAGE_LIMIT)}
 
     def getHelpdeskTicketList(self, page=0):
         helpdesk_list = []
@@ -191,6 +211,10 @@ class WBMobileRequestRegistration(models.Model):
     def getProductList(self):
         return json.dumps([{'id':prd.id, 'name':prd.name} for prd in
                 self.env['product.product'].search([('sale_ok', '=', True)])])
+
+    def getTeamListCount(self):
+        total_count = self.env['res.users'].sudo().search([('share', '=', False)], count=True)
+        return {"total_records": total_count, "total_pages": ceil(total_count / PAGE_LIMIT)}
 
     def getTeamList(self, page=0):
         helpdesk_list = []

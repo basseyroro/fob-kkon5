@@ -7,7 +7,7 @@
     'description': "General module upgrade HR",
     'category': 'Human Resource',
     'website': 'https://onlineweblearns.blogspot.com',
-    'depends' : ['hr', 'hr_payroll'],
+    'depends' : ['hr', 'hr_payroll', 'studio_customization'],
     'data': [
         "view/hr_view.xml"
     ],
