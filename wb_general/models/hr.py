@@ -63,10 +63,10 @@ class HRPayslip(models.Model):
 class Tickets(models.Model):
     _inherit = "helpdesk.ticket"
 
-    exp_finish_date = fields.Datetime(string="~Expected Finish Date", compute="onchange_sla_status_ids")
+    exp_finish_date = fields.Datetime(string="~Expected Finish Date", compute="_onchange_sla_status_ids")
 
     @api.onchange("sla_status_ids")
-    def onchange_sla_status_ids(self):
+    def _onchange_sla_status_ids(self):
         for rec in self:
             today = rec.create_date
             for sla in rec.sla_status_ids:
