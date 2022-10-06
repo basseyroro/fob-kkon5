@@ -9,7 +9,9 @@
     'website': 'https://onlineweblearns.blogspot.com',
     'depends' : ['hr', 'hr_payroll'],
     'data': [
-        "view/hr_view.xml"
+        "security/ir.model.access.csv",
+        "view/hr_view.xml",
+        "view/hr_extend_view.xml"
     ],
     'installable': True,
     'license': 'LGPL-3',

@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="wb_pas_1" model="wb.payroll.approval.state">
+            <field name="name">New</field>
+            <field name="sequence">1</field>
+        </record>
+        <record id="wb_pas_2" model="wb.payroll.approval.state">
+            <field name="name">HR Manager Approved</field>
+            <field name="sequence">2</field>
+        </record>
+        <record id="wb_pas_3" model="wb.payroll.approval.state">
+            <field name="name">MD Approved</field>
+            <field name="sequence">3</field>
+        </record>
+        <record id="wb_pas_4" model="wb.payroll.approval.state">
+            <field name="name">Rejected</field>
+            <field name="sequence">4</field>
+        </record>
+    </data>
+
+    <data>
+        <record id="wb_apyroll_approval_tags_form_view" model="ir.ui.view">
+            <field name="name">wb.payroll.approval.tags.form.view</field>
+            <field name="model">wb.payroll.approval.tags</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record id="wb_apyroll_approval_tags_tree_view" model="ir.ui.view">
+            <field name="name">wb.payroll.approval.tags.tree.view</field>
+            <field name="model">wb.payroll.approval.tags</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name"/>
+                </tree>
+            </field>
+        </record>
+        <record id="action_wb_payroll_approval_tags" model="ir.actions.act_window">
+            <field name="name">Payroll Approval Tags</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wb.payroll.approval.tags</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+        <menuitem action="action_wb_payroll_approval_tags" id="menu_action_wb_payroll_approval_tags" parent="hr_work_entry_contract_enterprise.menu_hr_payroll_configuration"/>
+
+        <record id="wb_apyroll_approval_state_form_view" model="ir.ui.view">
+            <field name="name">wb.payroll.approval.state.form.view</field>
+            <field name="model">wb.payroll.approval.state</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record id="wb_apyroll_approval_state_tree_view" model="ir.ui.view">
+            <field name="name">wb.payroll.approval.state.tree.view</field>
+            <field name="model">wb.payroll.approval.state</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="sequence" widget="handle" />
+                    <field name="name"/>
+                </tree>
+            </field>
+        </record>
+        <record id="action_wb_payroll_approval_state" model="ir.actions.act_window">
+            <field name="name">Payroll Approval State</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wb.payroll.approval.state</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+        <menuitem action="action_wb_payroll_approval_state" id="menu_action_wb_payroll_approval_state" parent="hr_work_entry_contract_enterprise.menu_hr_payroll_configuration"/>
+
+        <record id="wb_apyroll_approval_form_view" model="ir.ui.view">
+            <field name="name">wb.payroll.approval.form.view</field>
+            <field name="model">wb.payroll.approval</field>
+            <field name="arch" type="xml">
+                <form>
+                    <header>
+                        <button name="submit" id="action_submit"  string="Submit" type="object" class="btn-primary" attrs="{'invisible': [('doc_status', '!=','New')]}"/>
+                        <button name="hr_manager_approval" id="action_hrappro"  string="HR Manager Approval" type="object" class="btn-primary" attrs="{'invisible': [('doc_status', '!=','Awaiting HR Manager Approval')]}"/>
+                        <button name="md_approval" id="action_mdappro"  string="MD Approval" type="object" class="btn-primary" attrs="{'invisible': [('doc_status', '!=','Awaiting MD Approval')]}"/>
+                        <button name="reject" id="action_reject"  string="Reject" type="object" class="btn-primary" attrs="{'invisible': [('doc_status', '=','Approved')]}"/>
+                        <field name="state" widget="statusbar" clickable="0"/>
+                      </header>
+                    <sheet>
+                        <field name="kanban_state" widget="state_selection"/>
+                        <widget name="web_ribbon" text="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
+                        <field name="active" invisible="1"/>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" required="1" placeholder="Name..."/>
+                            </h1>
+                        </div>
+
+
+                        <group>
+                          <group>
+                              <field name="payslip_id" />
+                            <field name="currency_id" />
+                            <field name="total_paye" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="total_allowance" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="total_deduction" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="total_net_salary" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="total_pension" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="tag_ids" widget="many2many_tags" />
+                            <field name="company_id" groups="base.group_multi_company" options="{'no_create': True}"/>
+                          </group>
+                            <group>
+                                <field name="create_uid"/>
+                                <field name="create_date"/>
+                                <field name="doc_status" string="Doc Status" force_save="True" attrs="{}" readonly="1"/>
+                                <field name="hr_manager_id" string="HR Manager"/>
+                                <field name="hr_manager_email" string="HR Manager Email"/>
+                                <field name="md_id" string="MD"/>
+                                <field name="md_email" string="MD Email"/>
+                                <field name="write_uid"/>
+                                <field name="write_date"/>
+                            </group>
+                        </group>
+                        <group>
+                          <field name="note" placeholder="Type down your notes here..." nolabel="1"/>
+                        </group>
+                        <notebook>
+                          <page string="Details" name="lines">
+                            <field name="approval_line"/>
+                          </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record id="wb_apyroll_approval_tree_view" model="ir.ui.view">
+            <field name="name">wb.payroll.approval.tree.view</field>
+            <field name="model">wb.payroll.approval</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="sequence" widget="handle" />
+                    <field name="name"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="wb_apyroll_approval_kanban_view" model="ir.ui.view">
+            <field name="name">wb.payroll.approval.kanban.view</field>
+            <field name="model">wb.payroll.approval</field>
+            <field name="arch" type="xml">
+                <kanban default_group_by="state" default_order="priority desc, sequence asc, id desc">
+                      <field name="currency_id"/>
+                    <field name="name" />
+                    <field name="state" />
+                   <field name="total_paye" />
+                      <field name="total_allowance" />
+                      <field name="total_deduction" />
+                      <field name="total_net_salary" />
+                      <field name="total_pension" />
+                    <field name="kanban_state" />
+                    <progressbar field="kanban_state" colors="{&quot;normal&quot;: &quot;muted&quot;, &quot;done&quot;: &quot;success&quot;, &quot;blocked&quot;: &quot;danger&quot;}" sum_field="total_paye"/>
+                      <templates>
+                        <t t-name="kanban-box">
+                          <div class="o_kanban_record oe_kanban_global_click o_kanban_record_has_image_fill" color="x_color">
+                            <div class="o_kanban_record_details">
+                              <div class="o_kanban_record_top" name="studio_auto_kanban_top">
+                                <div class="o_kanban_record_headings" name="studio_auto_kanban_headings">
+                                  <field name="priority" widget="boolean_favorite" nolabel="1"/>
+                                  <strong class="o_kanban_record_title" name="studio_auto_kanban_title">
+                                    <field name="name"/>
+                                  </strong>
+                                </div>
+                                <div class="o_dropdown_kanban dropdown">
+                                  <a role="button" class="dropdown-toggle o-no-caret btn" data-toggle="dropdown" data-display="static" href="#" aria-label="Dropdown Menu" title="Dropdown Menu">
+                                    <span class="fa fa-ellipsis-v"/>
+                                  </a>
+                                  <div class="dropdown-menu" role="menu">
+                                    <a t-if="widget.editable" role="menuitem" type="edit" class="dropdown-item">Edit</a>
+                                    <a t-if="widget.deletable" role="menuitem" type="delete" class="dropdown-item">Delete</a>
+                                    <ul class="oe_kanban_colorpicker" data-field="x_color"/>
+                                  </div>
+                                </div>
+                              </div>
+                              <div class="o_kanban_record_body" name="studio_auto_kanban_body">
+                                <field name="tag_ids" />
+                              </div>
+                              <div class="o_kanban_record_bottom" name="studio_auto_kanban_bottom">
+                                <div class="oe_kanban_bottom_left" name="studio_auto_kanban_bottom_left">
+                                  <field name="total_paye" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                  <field name="total_allowance" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                  <field name="total_deduction" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                  <field name="total_net_salary" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                  <field name="total_pension" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                </div>
+                                <div class="oe_kanban_bottom_right" name="studio_auto_kanban_bottom_right">
+                                  <field name="kanban_state" widget="state_selection"/>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </t>
+                      </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <record id="action_wb_payroll_approval" model="ir.actions.act_window">
+            <field name="name">Payroll Approval</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wb.payroll.approval</field>
+            <field name="view_mode">kanban,tree,form</field>
+        </record>
+
+        <menuitem action="action_wb_payroll_approval" id="menu_action_wb_payroll_approval" parent="hr_work_entry_contract_enterprise.menu_hr_payroll_root"/>
+
+
+    </data>
+</odoo>
+
+
