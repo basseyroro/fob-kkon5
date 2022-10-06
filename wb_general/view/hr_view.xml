@@ -15,18 +15,23 @@
             <field name="arch" type="xml">
                 <field name="state" position="before">
                     <field name="basic_amt_total" optional="hide" sum="Total"/>
-                    <field name="annual_gross_amt_total" optional="hide" sum="Total"/>
                     <field name="allowance_amt_total" optional="hide" sum="Total"/>
-                    <field name="tlt_annual_earning_amt_total" optional="hide" sum="Total"/>
-                    <field name="annual_gross_cra_amt_total" optional="hide" sum="Total"/>
-                    <field name="taxable_income_amt_total" optional="hide" sum="Total"/>
-                    <field name="annual_paye_amt_total" optional="hide" sum="Total"/>
-                    <field name="monthly_gross_income_amt_total" optional="hide" sum="Total"/>
-                    <field name="monthly_paye_amt_total" optional="hide" sum="Total"/>
-                    <field name="surcharge_amt_total" optional="hide" sum="Total"/>
-                    <field name="loan_deduction_amt_total" optional="hide" sum="Total"/>
                     <field name="gross_amt_total" optional="hide" sum="Total"/>
-                    <field name="net_salary_amt_total" optional="hide" sum="Total"/>
+                    <field name="deduction_amt_total" optional="hide" sum="Total"/>
+                    <field name="net_amt_total" optional="hide" sum="Total"/>
+                    <field name="company_contribution_amt_total" optional="hide" sum="Total"/>
+                    <field name="tca_amt_total" optional="hide" sum="Total"/>
+                    <field name="hzd_allowance_amt_total" optional="hide" sum="Total"/>
+                    <field name="ann_pension_amt_total" optional="hide" sum="Total"/>
+                    <field name="total_pen_amt_total" optional="hide" sum="Total"/>
+                    <field name="gcra_amt_total" optional="hide" sum="Total"/>
+                    <field name="income_amt_total" optional="hide" sum="Total"/>
+                    <field name="emp_paye_amt_total" optional="hide" sum="Total"/>
+                    <field name="surcharge_amt_total" optional="hide" sum="Total"/>
+                    <field name="loan_amt_total" optional="hide" sum="Total"/>
+                    <field name="gross_income_amt_total" optional="hide" sum="Total"/>
+                    <field name="total_earning_amt_total" optional="hide" sum="Total"/>
+                    <field name="pit_amt_total" optional="hide" sum="Total"/>
                 </field>
             </field>
         </record>

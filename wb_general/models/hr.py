@@ -1,61 +1,57 @@
 from odoo import fields, models, api, _
 from datetime import datetime, timedelta
+from odoo.osv import expression
 
-GLOBAL_FIELDS_NAME = ["basic_amt_total",
-    "annual_gross_amt_total",
-    "allowance_amt_total",
-    "tlt_annual_earning_amt_total",
-    "annual_gross_cra_amt_total",
-    "taxable_income_amt_total",
-    "annual_paye_amt_total",
-    "monthly_gross_income_amt_total",
-    "monthly_paye_amt_total",
-    "surcharge_amt_total",
-    "loan_deduction_amt_total",
-    "gross_amt_total",
-    "net_salary_amt_total"]
+GLOBAL_FIELDS_NAME = ["Basic",
+    "Allowance","Gross","Deduction","Net",
+    "Company Contribution","TCA","HZD Allowance","ANN PENSION",
+    "Total Pen","GCRA","INCOME","EMP PAYE","surcharge","Loan",
+    "gross income","Total Earning","PIT"]
 
-GLOBAL_LABELS_NAME = {"Basic Salary":"basic_amt_total",
-                       "Annual Gross":"annual_gross_amt_total",
-                       "Allowance":"allowance_amt_total", "Total Annual Earnings":"tlt_annual_earning_amt_total",
-                       "Annual Gross of CRA":"annual_gross_cra_amt_total",
-                      "TAXABLE INCOME":"taxable_income_amt_total", "Annual PAYE":"annual_paye_amt_total",
-                       "Monthly Gross Income":"monthly_gross_income_amt_total", "Monthly PAYE":"monthly_paye_amt_total",
-                       "Surcharge":"surcharge_amt_total",
-                      "Loan deduction":"loan_deduction_amt_total", "Gross":"gross_amt_total",
-                       "Net Salary":"net_salary_amt_total"}
+GLOBAL_LABELS_NAME = {"Basic":"basic_amt_total",
+    "Allowance":"allowance_amt_total","Gross":"gross_amt_total","Deduction":"deduction_amt_total","Net":"net_amt_total",
+    "Company Contribution":"company_contribution_amt_total","TCA":"tca_amt_total","HZD Allowance":"hzd_allowance_amt_total",
+                      "ANN PENSION":"ann_pension_amt_total",
+    "Total Pen":"total_pen_amt_total","GCRA":"gcra_amt_total","INCOME":"income_amt_total",
+                      "EMP PAYE":"emp_paye_amt_total","surcharge":"surcharge_amt_total","Loan":"loan_amt_total",
+    "gross income":"gross_income_amt_total","Total Earning":"total_earning_amt_total","PIT":"pit_amt_total"}
 
 
 class HRPayslip(models.Model):
     _inherit = "hr.payslip"
 
     basic_amt_total = fields.Float("Basic", compute="_wb_computation_total", default=0.0)
-    annual_gross_amt_total = fields.Float("Annual Gross", compute="_wb_computation_total", default=0.0)
     allowance_amt_total = fields.Float("Allowance", compute="_wb_computation_total", default=0.0)
-    tlt_annual_earning_amt_total = fields.Float("Total Annual Earning", compute="_wb_computation_total", default=0.0)
-    annual_gross_cra_amt_total = fields.Float("Annual Gross CRA", compute="_wb_computation_total", default=0.0)
-    taxable_income_amt_total = fields.Float("Taxable Income", compute="_wb_computation_total", default=0.0)
-    annual_paye_amt_total = fields.Float("Annual Paye", compute="_wb_computation_total", default=0.0)
-    monthly_gross_income_amt_total = fields.Float("Monthly Gross Income", compute="_wb_computation_total", default=0.0)
-    monthly_paye_amt_total = fields.Float("Monthly Paye", compute="_wb_computation_total", default=0.0)
-    surcharge_amt_total = fields.Float("Surcharge", compute="_wb_computation_total", default=0.0)
-    loan_deduction_amt_total = fields.Float("Loan Deduction", compute="_wb_computation_total", default=0.0)
     gross_amt_total = fields.Float("Gross", compute="_wb_computation_total", default=0.0)
-    net_salary_amt_total = fields.Float("Net Salary", compute="_wb_computation_total", default=0.0)
+    deduction_amt_total = fields.Float("Deduction", default=0.0, compute="_wb_computation_total")
+    net_amt_total = fields.Float("Net Salary", compute="_wb_computation_total", default=0.0)
+    company_contribution_amt_total = fields.Float("Company Contribution", default=0.0)
+    tca_amt_total = fields.Float("TCA", compute="_wb_computation_total", default=0.0)
+    hzd_allowance_amt_total = fields.Float("HZD Allowance", compute="_wb_computation_total", default=0.0)
+    ann_pension_amt_total = fields.Float("Ann Pension", compute="_wb_computation_total", default=0.0)
+    total_pen_amt_total = fields.Float("Total Pen", compute="_wb_computation_total", default=0.0)
+    gcra_amt_total = fields.Float("GCRA", compute="_wb_computation_total", default=0.0)
+    income_amt_total = fields.Float("Income", compute="_wb_computation_total", default=0.0)
+    emp_paye_amt_total = fields.Float("EMP Paye", compute="_wb_computation_total", default=0.0)
+    surcharge_amt_total = fields.Float("Surcharge", compute="_wb_computation_total", default=0.0)
+    loan_amt_total = fields.Float("Loan", compute="_wb_computation_total", default=0.0)
+    gross_income_amt_total = fields.Float("Gross Income", compute="_wb_computation_total", default=0.0)
+    total_earning_amt_total = fields.Float("Total Earning", compute="_wb_computation_total", default=0.0)
+    pit_amt_total = fields.Float("PIT", compute="_wb_computation_total", default=0.0)
 
     def _wb_computation_total(self):
         for rec in self:
             labels = GLOBAL_LABELS_NAME.keys()
             prepare_vals = {}
-            for line in rec.line_ids:
-                if line.name in labels:
-                    prepare_vals[GLOBAL_LABELS_NAME.get(line.name)] = line.total
-            if prepare_vals:
-                rec.write(prepare_vals)
-            prepare_vals = {}
             for line in GLOBAL_LABELS_NAME.values():
                 if not rec[line]:
                     prepare_vals[line] = 0
+            for line in rec.line_ids:
+                if line.category_id.name in labels:
+                    if prepare_vals.get(line.category_id.name, 0):
+                        prepare_vals[GLOBAL_LABELS_NAME.get(line.category_id.name)] += line.total
+                    else:
+                        prepare_vals[GLOBAL_LABELS_NAME.get(line.category_id.name)] = line.total
             if prepare_vals:
                 rec.write(prepare_vals)
 
@@ -148,27 +144,14 @@ class Purchase(models.Model):
         for rec in self:
             rec.x_studio_selection_field_m7jU2 = "Approved"
 
-# class payroll_approval(models.Model):
-#     _inherit = "x_payroll_approval"
-#
-#     # allowance_amt_total = fields.Float("Total Allowance")
-#     # deduction_amt_total = fields.Float("Total Deduction")
-#
-#     @api.onchange("x_studio_many2one_field_KhLwi")
-#     def onchange_x_studio_many2one_field_KhLwi(self):
-#         for rec in self:
-#             allowance_amt_total, deduction_amt_total = 0, 0
-#             x_studio_value = 0
-#             x_studio_total_paye = 0
-#             x_studio_total_pension = 0
-#             if rec.x_studio_many2one_field_KhLwi and rec.x_studio_many2one_field_KhLwi.slip_ids:
-#                 allowance_amt_total += rec.x_studio_many2one_field_KhLwi.allowance_amt_total
-#                 deduction_amt_total += rec.x_studio_many2one_field_KhLwi.loan_deduction_amt_total
-#                 x_studio_value += rec.x_studio_many2one_field_KhLwi.net_salary_amt_total
-#                 x_studio_total_paye += rec.x_studio_many2one_field_KhLwi.monthly_paye_amt_total
-#                 x_studio_total_pension += rec.x_studio_many2one_field_KhLwi.x_studio_total_pension
-#
-#             rec.update({'x_studio_total_allowance':allowance_amt_total,'x_studio_total_deduction':deduction_amt_total,
-#                         'x_studio_value':x_studio_value, 'x_studio_total_paye':x_studio_total_paye,
-#                         'x_studio_total_pension':x_studio_total_pension})
 
+class Partner(models.Model):
+    _inherit = "res.partner"
+
+    @api.model
+    def _name_search(self, name='', args=None, operator='ilike', limit=100, name_get_uid=None):
+        args = args or []
+        if name:
+            args = ['|',('name',operator, name), ('x_studio_customer_id', operator, name)]
+            name = ''
+        return super(Partner, self)._name_search(name=name, args=args, operator=operator, limit=limit, name_get_uid=name_get_uid)
