@@ -133,7 +133,7 @@ class Purchase(models.Model):
         amount = float(self.env['ir.config_parameter'].sudo().get_param('po_approval_config', '0'))
         for rec in self:
             rec.is_approval_by_ceo = False
-            if rec.amount_total > amount:
+            if rec.amount_total < amount:
                 rec.is_approval_by_ceo = True
 
     def approved_by_ceo(self):
