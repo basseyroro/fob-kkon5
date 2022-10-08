@@ -1,44 +1,70 @@
 from odoo import fields, models, api, _
 from datetime import datetime, timedelta
-from odoo.osv import expression
+from odoo.exceptions import ValidationError
 
-GLOBAL_FIELDS_NAME = ["Basic",
-    "Allowance","Gross","Deduction","Net",
-    "Company Contribution","TCA","HZD Allowance","ANN PENSION",
-    "Total Pen","GCRA","INCOME","EMP PAYE","surcharge","Loan",
-    "gross income","Total Earning","PIT"]
+GLOBAL_FIELDS_NAME = ["Basic Salary", "Housing", "Annual Gross", "Transport Allowance", "Allowance",
+                      "Utility Allowance", "Total Annual Earnings", "Leave Allowance", "PIT",
+                      "Transport & Comm Allowance (Sales Only)", "Hazard Allowance",
+                      "Employee Pension Contribution", "Employer Pension Contribution",
+                      "Annual Gross of CRA", "Total Pension", "TAXABLE INCOME", "Annual Pension",
+                      "Annual PAYE", "Monthly PAYE", "Monthly Gross Income", "Surcharge", "Loan deduction",
+                      "Gross", "Attachment of Salary", "Assignment of Salary", "Child Support", "Deduction",
+                      "Reimbursement", "Net Salary"]
 
-GLOBAL_LABELS_NAME = {"Basic":"basic_amt_total",
-    "Allowance":"allowance_amt_total","Gross":"gross_amt_total","Deduction":"deduction_amt_total","Net":"net_amt_total",
-    "Company Contribution":"company_contribution_amt_total","TCA":"tca_amt_total","HZD Allowance":"hzd_allowance_amt_total",
-                      "ANN PENSION":"ann_pension_amt_total",
-    "Total Pen":"total_pen_amt_total","GCRA":"gcra_amt_total","INCOME":"income_amt_total",
-                      "EMP PAYE":"emp_paye_amt_total","surcharge":"surcharge_amt_total","Loan":"loan_amt_total",
-    "gross income":"gross_income_amt_total","Total Earning":"total_earning_amt_total","PIT":"pit_amt_total"}
+GLOBAL_LABELS_NAME = {"Basic Salary":"amt_total_basic_salary", "Housing":"amt_total_housing",
+                      "Annual Gross":"amt_total_annual_gross", "Transport Allowance":"amt_total_transport_allowance",
+                      "Allowance":"amt_total_allowance", "Utility Allowance":"amt_total_utility_allowance",
+                         "Total Annual Earnings":"amt_total_total_annual_earnings", "Leave Allowance":"amt_total_leave_allowance",
+                         "PIT":"amt_total_pit", "Transport & Comm Allowance (Sales Only)":"amt_total_transport_comm_allowance",
+                         "Hazard Allowance":"amt_total_hazard_allowance",
+                         "Employee Pension Contribution":"amt_total_employee_pension_contribution",
+                         "Employer Pension Contribution":"amt_total_employer_pension_contribution",
+                         "Annual Gross of CRA":"amt_total_annual_gross_of_cra", "Total Pension":"amt_total_total_pension",
+                         "TAXABLE INCOME":"amt_total_taxable_income", "Annual Pension":"amt_total_annual_pension",
+                         "Annual PAYE":"amt_total_annual_paye", "Monthly PAYE":"amt_total_monthly_paye",
+                         "Monthly Gross Income":"amt_total_monthly_gross_income", "Surcharge":"amt_total_surcharge",
+                         "Loan deduction":"amt_total_load_deduction", "Gross":"amt_total_gross",
+                         "Attachment of Salary":"amt_total_attachment_salary", "Assignment of Salary":"amt_total_assignment_salary",
+                         "Child Support":"amt_total_child_support", "Deduction":"amt_total_deduction",
+                         "Reimbursement":"amt_total_reimbursement", "Net Salary":"amt_total_net_salary"}
 
 
 class HRPayslip(models.Model):
     _inherit = "hr.payslip"
 
-    basic_amt_total = fields.Float("Basic", compute="_wb_computation_total", default=0.0)
-    allowance_amt_total = fields.Float("Allowance", compute="_wb_computation_total", default=0.0)
-    gross_amt_total = fields.Float("Gross", compute="_wb_computation_total", default=0.0)
-    deduction_amt_total = fields.Float("Deduction", default=0.0, compute="_wb_computation_total")
-    net_amt_total = fields.Float("Net Salary", compute="_wb_computation_total", default=0.0)
-    company_contribution_amt_total = fields.Float("Company Contribution", default=0.0)
-    tca_amt_total = fields.Float("TCA", compute="_wb_computation_total", default=0.0)
-    hzd_allowance_amt_total = fields.Float("HZD Allowance", compute="_wb_computation_total", default=0.0)
-    ann_pension_amt_total = fields.Float("Ann Pension", compute="_wb_computation_total", default=0.0)
-    total_pen_amt_total = fields.Float("Total Pen", compute="_wb_computation_total", default=0.0)
-    gcra_amt_total = fields.Float("GCRA", compute="_wb_computation_total", default=0.0)
-    income_amt_total = fields.Float("Income", compute="_wb_computation_total", default=0.0)
-    emp_paye_amt_total = fields.Float("EMP Paye", compute="_wb_computation_total", default=0.0)
-    surcharge_amt_total = fields.Float("Surcharge", compute="_wb_computation_total", default=0.0)
-    loan_amt_total = fields.Float("Loan", compute="_wb_computation_total", default=0.0)
-    gross_income_amt_total = fields.Float("Gross Income", compute="_wb_computation_total", default=0.0)
-    total_earning_amt_total = fields.Float("Total Earning", compute="_wb_computation_total", default=0.0)
-    pit_amt_total = fields.Float("PIT", compute="_wb_computation_total", default=0.0)
-
+    amt_total_basic_salary = fields.Float("Basic Salary", compute="_wb_computation_total")
+    amt_total_housing = fields.Float("Housing", compute="_wb_computation_total")
+    amt_total_annual_gross = fields.Float("Annual Gross", compute="_wb_computation_total")
+    amt_total_transport_allowance = fields.Float("Transport Allowance", compute="_wb_computation_total")
+    amt_total_allowance = fields.Float("Allowance", compute="_wb_computation_total")
+    amt_total_utility_allowance = fields.Float("Utility Allowance", compute="_wb_computation_total")
+    amt_total_total_annual_earnings = fields.Float("Total Annual Earnings", compute="_wb_computation_total")
+    amt_total_leave_allowance = fields.Float("Leave Allowance", compute="_wb_computation_total")
+    amt_total_pit = fields.Float("PIT", compute="_wb_computation_total")
+    amt_total_transport_comm_allowance = fields.Float("Transport & Comm Allowance (Sales Only)",
+                                                        compute="_wb_computation_total")
+    amt_total_hazard_allowance = fields.Float("Hazard Allowance", compute="_wb_computation_total")
+    amt_total_employee_pension_contribution = fields.Float("Employee Pension Contribution",
+                                                             compute="_wb_computation_total")
+    amt_total_employer_pension_contribution = fields.Float("Employer Pension Contribution",
+                                                             compute="_wb_computation_total")
+    amt_total_annual_gross_of_cra = fields.Float("Annual Gross of CRA", compute="_wb_computation_total")
+    amt_total_total_pension = fields.Float("Total Pension", compute="_wb_computation_total")
+    amt_total_taxable_income = fields.Float("TAXABLE INCOME", compute="_wb_computation_total")
+    amt_total_annual_pension = fields.Float("Annual Pension", compute="_wb_computation_total")
+    amt_total_annual_paye = fields.Float("Annual PAYE", compute="_wb_computation_total")
+    amt_total_monthly_paye = fields.Float("Monthly PAYE", compute="_wb_computation_total")
+    amt_total_monthly_gross_income = fields.Float("Monthly Gross Income", compute="_wb_computation_total")
+    amt_total_surcharge = fields.Float("Surcharge", compute="_wb_computation_total")
+    amt_total_load_deduction = fields.Float("Loan deduction", compute="_wb_computation_total")
+    amt_total_gross = fields.Float("Gross", compute="_wb_computation_total")
+    amt_total_attachment_salary = fields.Float("Attachment of Salary", compute="_wb_computation_total")
+    amt_total_assignment_salary = fields.Float("Assignment of Salary", compute="_wb_computation_total")
+    amt_total_child_support = fields.Float("Child Support", compute="_wb_computation_total")
+    amt_total_deduction = fields.Float("Deduction", compute="_wb_computation_total")
+    amt_total_reimbursement = fields.Float("Reimbursement", compute="_wb_computation_total")
+    amt_total_net_salary = fields.Float("Net Salary", compute="_wb_computation_total")
+    
     def _wb_computation_total(self):
         for rec in self:
             labels = GLOBAL_LABELS_NAME.keys()
@@ -47,11 +73,11 @@ class HRPayslip(models.Model):
                 if not rec[line]:
                     prepare_vals[line] = 0
             for line in rec.line_ids:
-                if line.category_id.name in labels:
-                    if prepare_vals.get(line.category_id.name, 0):
-                        prepare_vals[GLOBAL_LABELS_NAME.get(line.category_id.name)] += line.total
+                if line.name in labels:
+                    if prepare_vals.get(line.name, 0):
+                        prepare_vals[GLOBAL_LABELS_NAME.get(line.name)] += line.total
                     else:
-                        prepare_vals[GLOBAL_LABELS_NAME.get(line.category_id.name)] = line.total
+                        prepare_vals[GLOBAL_LABELS_NAME.get(line.name)] = line.total
             if prepare_vals:
                 rec.write(prepare_vals)
 
@@ -138,11 +164,27 @@ class Purchase(models.Model):
 
     def approved_by_ceo(self):
         for rec in self:
-            rec.x_studio_selection_field_m7jU2 = "Approved"
+            amount = float(self.env['ir.config_parameter'].sudo().get_param('po_approval_config', '0'))
+            if rec.amount_total < amount:
+                rec.x_studio_selection_field_m7jU2 = "Approved"
+            else:
+                rec.x_studio_selection_field_m7jU2 = "Awaiting MD Approval"
 
     def approved_by_manager(self):
         for rec in self:
             rec.x_studio_selection_field_m7jU2 = "Approved"
+
+    def checkWritablePermission(self):
+        not_editable = False
+        if self.x_studio_selection_field_m7jU2 != 'New' and not self.env.user.has_group('wb_general.po_editor_group'):
+            not_editable = True
+        if not_editable:
+            raise ValidationError(_("You don't have access rights to edit purchase order."))
+
+    def write(self, vals):
+        for rec in self:
+            rec.checkWritablePermission()
+        return super(Purchase, self).write(vals)
 
 
 class Partner(models.Model):

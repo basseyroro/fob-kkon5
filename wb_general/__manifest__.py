@@ -10,6 +10,7 @@
     'depends' : ['hr', 'hr_payroll'],
     'data': [
         "security/ir.model.access.csv",
+        "security/security.xml",
         "view/hr_view.xml",
         "view/hr_extend_view.xml"
     ],
