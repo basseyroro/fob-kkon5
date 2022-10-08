@@ -14,24 +14,35 @@
             <field name="inherit_id" ref="hr_payroll.view_hr_payslip_tree" />
             <field name="arch" type="xml">
                 <field name="state" position="before">
-                    <field name="basic_amt_total" optional="hide" sum="Total"/>
-                    <field name="allowance_amt_total" optional="hide" sum="Total"/>
-                    <field name="gross_amt_total" optional="hide" sum="Total"/>
-                    <field name="deduction_amt_total" optional="hide" sum="Total"/>
-                    <field name="net_amt_total" optional="hide" sum="Total"/>
-                    <field name="company_contribution_amt_total" optional="hide" sum="Total"/>
-                    <field name="tca_amt_total" optional="hide" sum="Total"/>
-                    <field name="hzd_allowance_amt_total" optional="hide" sum="Total"/>
-                    <field name="ann_pension_amt_total" optional="hide" sum="Total"/>
-                    <field name="total_pen_amt_total" optional="hide" sum="Total"/>
-                    <field name="gcra_amt_total" optional="hide" sum="Total"/>
-                    <field name="income_amt_total" optional="hide" sum="Total"/>
-                    <field name="emp_paye_amt_total" optional="hide" sum="Total"/>
-                    <field name="surcharge_amt_total" optional="hide" sum="Total"/>
-                    <field name="loan_amt_total" optional="hide" sum="Total"/>
-                    <field name="gross_income_amt_total" optional="hide" sum="Total"/>
-                    <field name="total_earning_amt_total" optional="hide" sum="Total"/>
-                    <field name="pit_amt_total" optional="hide" sum="Total"/>
+                    <field name="amt_total_basic_salary" optional="hide" sum="Total"/>
+                    <field name="amt_total_housing" optional="hide" sum="Total"/>
+                    <field name="amt_total_annual_gross" optional="hide" sum="Total"/>
+                    <field name="amt_total_transport_allowance" optional="hide" sum="Total"/>
+                    <field name="amt_total_allowance" optional="hide" sum="Total"/>
+                    <field name="amt_total_utility_allowance" optional="hide" sum="Total"/>
+                    <field name="amt_total_total_annual_earnings" optional="hide" sum="Total"/>
+                    <field name="amt_total_leave_allowance" optional="hide" sum="Total"/>
+                    <field name="amt_total_pit" optional="hide" sum="Total"/>
+                    <field name="amt_total_transport_comm_allowance" optional="hide" sum="Total"/>
+                    <field name="amt_total_hazard_allowance" optional="hide" sum="Total"/>
+                    <field name="amt_total_employee_pension_contribution" optional="hide" sum="Total"/>
+                    <field name="amt_total_employer_pension_contribution" optional="hide" sum="Total"/>
+                    <field name="amt_total_annual_gross_of_cra" optional="hide" sum="Total"/>
+                    <field name="amt_total_total_pension" optional="hide" sum="Total"/>
+                    <field name="amt_total_taxable_income" optional="hide" sum="Total"/>
+                    <field name="amt_total_annual_pension" optional="hide" sum="Total"/>
+                    <field name="amt_total_annual_paye" optional="hide" sum="Total"/>
+                    <field name="amt_total_monthly_paye" optional="hide" sum="Total"/>
+                    <field name="amt_total_monthly_gross_income" optional="hide" sum="Total"/>
+                    <field name="amt_total_surcharge" optional="hide" sum="Total"/>
+                    <field name="amt_total_load_deduction" optional="hide" sum="Total"/>
+                    <field name="amt_total_gross" optional="hide" sum="Total"/>
+                    <field name="amt_total_attachment_salary" optional="hide" sum="Total"/>
+                    <field name="amt_total_assignment_salary" optional="hide" sum="Total"/>
+                    <field name="amt_total_child_support" optional="hide" sum="Total"/>
+                    <field name="amt_total_deduction" optional="hide" sum="Total"/>
+                    <field name="amt_total_reimbursement" optional="hide" sum="Total"/>
+                    <field name="amt_total_net_salary" optional="hide" sum="Total"/>
                 </field>
             </field>
         </record>
@@ -135,11 +146,11 @@
             <field name="inherit_id" ref="purchase.purchase_order_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//header" position="inside">
-                    <button name="approved_by_ceo" type="object" string="Approved by CEO"
-                            attrs="{'invisible':['|',('x_studio_selection_field_m7jU2','=','Approved'),('is_approval_by_ceo','=',False)]}"
+                    <button name="approved_by_ceo" type="object" string="CFO Approval" groups="studio_customization.purchase_cfo_d698ffc3-85b4-4476-b6ae-ae1dc20c9934"
+                            attrs="{'invisible':[('x_studio_selection_field_m7jU2','!=','Awaiting CFO Approval')]}"
                             class="oe_highlight" id="bid_confirm" data-hotkey="a"/>
-                    <button name="approved_by_manager" type="object"  string="Approved by MD"
-                            attrs="{'invisible':['|',('x_studio_selection_field_m7jU2','=','Approved'),('is_approval_by_ceo','=',True)]}"
+                    <button name="approved_by_manager" type="object"  string="MD Approval" groups="studio_customization.purchase_md_9e48517b-94b9-40d6-93c8-f07c95fa576d"
+                            attrs="{'invisible':[('x_studio_selection_field_m7jU2','!=','Awaiting MD Approval')]}"
                             class="oe_highlight" id="bid_confirm" data-hotkey="b"/>
                 </xpath>
                 <xpath expr="//button[@id='bid_confirm']" position="replace">
@@ -152,9 +163,9 @@
                             attrs="{'invisible':['|',('x_studio_selection_field_m7jU2','!=','Approved'),('state','!=','draft')]}"
                             id="draft_confirm"/>
                 </xpath>
-                <field name="partner_id" position="after">
-                    <field name="is_approval_by_ceo"  />
-                </field>
+<!--                <field name="partner_id" position="after">-->
+<!--                    <field name="is_approval_by_ceo" in />-->
+<!--                </field>-->
             </field>
         </record>
 
