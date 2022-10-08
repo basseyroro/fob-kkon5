@@ -9,8 +9,8 @@ class PayrollApproval(models.Model):
     approval_line = fields.One2many("wb.payroll.approval.line","approval_id", "Details")
     state = fields.Many2one("wb.payroll.approval.state", "State")
     active = fields.Boolean(default=True)
-    company_id = fields.Many2one("res.company", "Company")
-    currency_id = fields.Many2one("res.currency", "Currency")
+    company_id = fields.Many2one("res.company", "Company", default=lambda lm: lm.env.company.id)
+    currency_id = fields.Many2one("res.currency", "Currency", default=lambda lm: lm.env.company.currency_id.id)
     payslip_id = fields.Many2one("hr.payslip.run", "Payslip")
     doc_status = fields.Selection([("New","New"),
                                    ("Awaiting HR Manager Approval","Awaiting HR Manager Approval"),
@@ -33,11 +33,27 @@ class PayrollApproval(models.Model):
                                      ('done','Ready'),
                                      ('blocked','Blocked')], default="normal", copy=False, required=True)
 
+    @api.onchange("payslip_id")
+    @api.depends("payslip_id")
+    def onchange_payslip_id(self):
+        total_paye = ["EMP PAYE"]
+        total_allowance = ["Allowance", "HZD Allowance"]
+        total_deduction = ["Deduction"]
+        total_net_salary = ["Net"]
+        total_pension = ["Total Pen", "EMP PAYE"]
+        vals = {'total_paye': 0, 'total_allowance': 0, 'total_deduction': 0, 'total_net_salary': 0, 'total_pension': 0}
+        if self.payslip_id:
+            vals['total_paye'] = sum(self.payslip_id.mapped("slip_ids").mapped("line_ids").filtered(lambda llm:llm.category_id.name in total_paye).mapped("total"))
+            vals['total_allowance'] = sum(self.payslip_id.mapped("slip_ids").mapped("line_ids").filtered(lambda llm:llm.category_id.name in total_allowance).mapped("total"))
+            vals['total_deduction'] = sum(self.payslip_id.mapped("slip_ids").mapped("line_ids").filtered(lambda llm:llm.category_id.name in total_deduction).mapped("total"))
+            vals['total_net_salary'] = sum(self.payslip_id.mapped("slip_ids").mapped("line_ids").filtered(lambda llm:llm.category_id.name in total_net_salary).mapped("total"))
+            vals['total_pension'] = sum(self.payslip_id.mapped("slip_ids").mapped("line_ids").filtered(lambda llm:llm.category_id.name in total_pension).mapped("total"))
+        self.write(vals)
+
     @api.model
     def default_get(self, fields_list):
         defaults = super().default_get(fields_list)
-        defaults['company_id'] = self.env.company.id
-        defaults['currency_id'] = self.env.company.currency_id.id
+        defaults['state'] = self.env['wb.payroll.approval.state'].search([], limit=1, order='sequence')
         return defaults
 
     def submit(self):
