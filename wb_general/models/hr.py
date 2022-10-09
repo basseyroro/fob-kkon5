@@ -98,8 +98,22 @@ class Tickets(models.Model):
             rec.exp_finish_sla_date = today
             today = rec.create_date
             if rec.ticket_type_id:
-                today += timedelta(hours=rec.ticket_type_id.time)
+                working_days = rec.ticket_type_id.time / 24
+                # today += timedelta(hours=rec.ticket_type_id.time)
+                today = self.date_by_adding_working_days(rec.create_date, working_days)
             rec.exp_finish_date = today
+
+    def date_by_adding_working_days(self, from_date, add_days):
+        import datetime
+        business_days_to_add = add_days
+        current_date = from_date
+        while business_days_to_add > 0:
+            current_date += datetime.timedelta(days=1)
+            weekday = current_date.weekday()
+            if weekday >= 5:  # sunday = 6
+                continue
+            business_days_to_add -= 1
+        return current_date
 
 
 class TicketType(models.Model):
