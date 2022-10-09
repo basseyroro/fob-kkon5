@@ -1,4 +1,5 @@
 from odoo import api, fields, models, _
+from odoo.exceptions import ValidationError
 
 
 class PayrollApproval(models.Model):
@@ -70,6 +71,17 @@ class PayrollApproval(models.Model):
     def reject(self):
         self.doc_status = 'New'
         self.state = self.env.ref("wb_general.wb_pas_4")
+
+    def write(self, vals):
+        rtn = super(PayrollApproval, self).write(vals)
+        for rec in self:
+            rec.PayrollEditor()
+        return rtn
+
+    def PayrollEditor(self):
+        if self.state and self.state != self.env.ref("wb_general.wb_pas_1"):
+            if not self.env.user.has_group('wb_general.pyroll_editor_group'):
+                raise ValidationError(_("You don't have access rights to edit purchase order."))
 
 
 class PayrollApprovalStage(models.Model):
