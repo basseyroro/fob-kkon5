@@ -43,11 +43,11 @@ class PayrollApproval(models.Model):
         total_pension = ["Total Pension"]
         vals = {'total_paye': 0, 'total_allowance': 0, 'total_deduction': 0, 'total_net_salary': 0, 'total_pension': 0}
         if self.payslip_id:
-            vals['total_paye'] = sum(self.payslip_id.mapped("slip_ids").mapped("line_ids").filtered(lambda llm:llm.category_id.name in total_paye).mapped("total"))
-            vals['total_allowance'] = sum(self.payslip_id.mapped("slip_ids").mapped("line_ids").filtered(lambda llm:llm.category_id.name in total_allowance).mapped("total"))
-            vals['total_deduction'] = sum(self.payslip_id.mapped("slip_ids").mapped("line_ids").filtered(lambda llm:llm.category_id.name in total_deduction).mapped("total"))
-            vals['total_net_salary'] = sum(self.payslip_id.mapped("slip_ids").mapped("line_ids").filtered(lambda llm:llm.category_id.name in total_net_salary).mapped("total"))
-            vals['total_pension'] = sum(self.payslip_id.mapped("slip_ids").mapped("line_ids").filtered(lambda llm:llm.category_id.name in total_pension).mapped("total"))
+            vals['total_paye'] = sum(self.payslip_id.mapped("slip_ids").mapped("line_ids").filtered(lambda llm:llm.salary_rule_id.name in total_paye).mapped("total"))
+            vals['total_allowance'] = sum(self.payslip_id.mapped("slip_ids").mapped("line_ids").filtered(lambda llm:llm.salary_rule_id.name in total_allowance).mapped("total"))
+            vals['total_deduction'] = sum(self.payslip_id.mapped("slip_ids").mapped("line_ids").filtered(lambda llm:llm.salary_rule_id.name in total_deduction).mapped("total"))
+            vals['total_net_salary'] = sum(self.payslip_id.mapped("slip_ids").mapped("line_ids").filtered(lambda llm:llm.salary_rule_id.name in total_net_salary).mapped("total"))
+            vals['total_pension'] = sum(self.payslip_id.mapped("slip_ids").mapped("line_ids").filtered(lambda llm:llm.salary_rule_id.name in total_pension).mapped("total"))
         self.write(vals)
 
     @api.model
