@@ -39,7 +39,7 @@ class PayrollApproval(models.Model):
         total_paye = ["Monthly PAYE"]
         total_allowance = ["Monthly Gross Income"]
         total_deduction = ["Monthly PAYE", "Employee Pension Contribution","Loan Deduction","Surcharge"]
-        total_net_salary = ["Net"]
+        total_net_salary = ["Net Salary"]
         total_pension = ["Total Pension"]
         vals = {'total_paye': 0, 'total_allowance': 0, 'total_deduction': 0, 'total_net_salary': 0, 'total_pension': 0}
         if self.payslip_id:
