@@ -5,4 +5,7 @@
         <field name="name">Purchase Order Edit</field>
     </record>
 
+    <record id="pyroll_editor_group" model="res.groups">
+        <field name="name">Payroll Edit</field>
+    </record>
 </odoo>
