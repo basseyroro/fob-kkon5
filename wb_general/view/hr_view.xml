@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="po_approval_config" model="ir.config_parameter">
+            <field name="key">po_approval_config</field>
+            <field name="value" eval="1000000"/>
+        </record>
+    </data>
+    <data>
+
+        <record id="wb_view_hr_payslip_tree" model="ir.ui.view">
+            <field name="name">wb.view.hr.payslip.tree</field>
+            <field name="model">hr.payslip</field>
+            <field name="inherit_id" ref="hr_payroll.view_hr_payslip_tree" />
+            <field name="arch" type="xml">
+                <field name="state" position="before">
+                    <field name="amt_total_basic_salary" optional="hide" sum="Total"/>
+                    <field name="amt_total_housing" optional="hide" sum="Total"/>
+                    <field name="amt_total_annual_gross" optional="hide" sum="Total"/>
+                    <field name="amt_total_transport_allowance" optional="hide" sum="Total"/>
+                    <field name="amt_total_allowance" optional="hide" sum="Total"/>
+                    <field name="amt_total_utility_allowance" optional="hide" sum="Total"/>
+                    <field name="amt_total_total_annual_earnings" optional="hide" sum="Total"/>
+                    <field name="amt_total_leave_allowance" optional="hide" sum="Total"/>
+                    <field name="amt_total_pit" optional="hide" sum="Total"/>
+                    <field name="amt_total_transport_comm_allowance" optional="hide" sum="Total"/>
+                    <field name="amt_total_hazard_allowance" optional="hide" sum="Total"/>
+                    <field name="amt_total_employee_pension_contribution" optional="hide" sum="Total"/>
+                    <field name="amt_total_employer_pension_contribution" optional="hide" sum="Total"/>
+                    <field name="amt_total_annual_gross_of_cra" optional="hide" sum="Total"/>
+                    <field name="amt_total_total_pension" optional="hide" sum="Total"/>
+                    <field name="amt_total_taxable_income" optional="hide" sum="Total"/>
+                    <field name="amt_total_annual_pension" optional="hide" sum="Total"/>
+                    <field name="amt_total_annual_paye" optional="hide" sum="Total"/>
+                    <field name="amt_total_monthly_paye" optional="hide" sum="Total"/>
+                    <field name="amt_total_monthly_gross_income" optional="hide" sum="Total"/>
+                    <field name="amt_total_surcharge" optional="hide" sum="Total"/>
+                    <field name="amt_total_load_deduction" optional="hide" sum="Total"/>
+                    <field name="amt_total_gross" optional="hide" sum="Total"/>
+                    <field name="amt_total_attachment_salary" optional="hide" sum="Total"/>
+                    <field name="amt_total_assignment_salary" optional="hide" sum="Total"/>
+                    <field name="amt_total_child_support" optional="hide" sum="Total"/>
+                    <field name="amt_total_deduction" optional="hide" sum="Total"/>
+                    <field name="amt_total_reimbursement" optional="hide" sum="Total"/>
+                    <field name="amt_total_net_salary" optional="hide" sum="Total"/>
+                </field>
+            </field>
+        </record>
+
+        <record id="helpdesk_ticket_view_form" model="ir.ui.view">
+            <field name="name">helpdesk_ticket_view_form</field>
+            <field name="model">helpdesk.ticket</field>
+            <field name="inherit_id" ref="helpdesk.helpdesk_ticket_view_form" />
+            <field name="arch" type="xml">
+                <field name="sla_deadline" position="before">
+                    <field name="exp_finish_date"/>
+                    <field name="exp_finish_sla_date"/>
+                </field>
+            </field>
+        </record>
+
+        <record id="view_hr_expense_sheet_form" model="ir.ui.view">
+            <field name="name">hr.expense.sheet.extend.form</field>
+            <field name="model">hr.expense.sheet</field>
+            <field name="priority" eval="8" />
+            <field name="inherit_id" ref="hr_expense.view_hr_expense_sheet_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='approve_expense_sheets']" position="before">
+                    <button name="action_manager_approve" string="Approve By Manager" type="object" attrs="{'invisible': [('state', '!=', 'submit')]}" class="oe_highlight o_expense_sheet_approve"/>
+                    <button name="action_audit_manager_approve" string="Approve By Auditor" type="object" attrs="{'invisible': [('state', '!=', 'approved_manager')]}" class="oe_highlight o_expense_sheet_approve"/>
+                </xpath>
+
+                <xpath expr="//button[@name='approve_expense_sheets']" position="attributes">
+                    <attribute name="attrs">{'invisible': [('state', '!=', 'interal_audit')]}</attribute>
+                </xpath>
+
+                <xpath expr="//button[@name='reset_expense_sheets']" position="attributes">
+                    <attribute name="attrs">{'invisible':[('state', 'not in', ['approved_manager'])]}</attribute>
+                </xpath>
+
+                <xpath expr="//button[@name='%(hr_expense.hr_expense_refuse_wizard_action)d']" position="attributes">
+                    <attribute name="attrs">{'invisible':[('state', 'not in', ['approved_manager'])]}</attribute>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="hr_expense_sheet_view_search" model="ir.ui.view">
+            <field name="name">hr.expense.sheet.view.search</field>
+            <field name="inherit_id" ref="hr_expense.hr_expense_sheet_view_search"/>
+            <field name="model">hr.expense.sheet</field>
+            <field name="arch" type="xml">
+                <filter name="submitted" position="after">
+                    <filter domain="[('state', '=', 'submit')]" string="Manager To Approve" name="approved_manager" help="Manager To Confirmed Expenses"/>
+                    <filter domain="[('state', '=', 'approved_manager')]" string="Interal Audit To Approve" name="interal_audit" help="Interal Audit To Confirmed Expenses"/>
+                </filter>
+            </field>
+        </record>
+
+        <record id="action_hr_expense_sheet_all_manager_to_approve" model="ir.actions.act_window">
+            <field name="name">Expense Reports Manager to Approve</field>
+            <field name="res_model">hr.expense.sheet</field>
+            <field name="view_mode">tree,kanban,form,pivot,graph,activity</field>
+            <field name="search_view_id" ref="hr_expense.hr_expense_sheet_view_search"/>
+            <field name="domain">[]</field>
+            <field name="context">{'search_default_approved_manager': 1}</field>
+            <field name="view_id" ref="hr_expense.view_hr_expense_sheet_tree"/>
+            <field name="help" type="html">
+              <p class="o_view_nocontent_smiling_face">
+                No expense reports found
+              </p><p>
+                Approve the new expense reports submitted by the employees you manage.
+              </p>
+            </field>
+        </record>
+
+        <menuitem id="menu_hr_expense_sheet_all_manager_to_approve"
+                  name="Manager to Approve" sequence="1" parent="hr_expense.menu_hr_expense_report"
+                  action="action_hr_expense_sheet_all_manager_to_approve"
+                  groups="hr_expense.group_hr_expense_team_approver"/>
+
+        <record id="action_hr_expense_sheet_all_audit_to_approve" model="ir.actions.act_window">
+            <field name="name">Expense Reports Audit to Approve</field>
+            <field name="res_model">hr.expense.sheet</field>
+            <field name="view_mode">tree,kanban,form,pivot,graph,activity</field>
+            <field name="search_view_id" ref="hr_expense.hr_expense_sheet_view_search"/>
+            <field name="domain">[]</field>
+            <field name="context">{'search_default_interal_audit': 1}</field>
+            <field name="view_id" ref="hr_expense.view_hr_expense_sheet_tree"/>
+            <field name="help" type="html">
+              <p class="o_view_nocontent_smiling_face">
+                No expense reports found
+              </p><p>
+                Approve the new expense reports submitted by the employees you manage.
+              </p>
+            </field>
+        </record>
+
+        <menuitem id="menu_hr_expense_sheet_all_audit_to_approve"
+                  name="Audit to Approve" sequence="1" parent="hr_expense.menu_hr_expense_report"
+                  action="action_hr_expense_sheet_all_audit_to_approve"
+                  groups="hr_expense.group_hr_expense_team_approver"/>
+
+        <record id="purchase_order_form" model="ir.ui.view">
+            <field name="name">purchase.order.form</field>
+            <field name="model">purchase.order</field>
+            <field name="priority" eval="100"/>
+            <field name="inherit_id" ref="purchase.purchase_order_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//header" position="inside">
+                    <button name="approved_by_ceo" type="object" string="CFO Approval" groups="studio_customization.purchase_cfo_d698ffc3-85b4-4476-b6ae-ae1dc20c9934"
+                            attrs="{'invisible':[('x_studio_selection_field_m7jU2','!=','Awaiting CFO Approval')]}"
+                            class="oe_highlight" id="bid_confirm" data-hotkey="a"/>
+                    <button name="approved_by_manager" type="object"  string="MD Approval" groups="studio_customization.purchase_md_9e48517b-94b9-40d6-93c8-f07c95fa576d"
+                            attrs="{'invisible':[('x_studio_selection_field_m7jU2','!=','Awaiting MD Approval')]}"
+                            class="oe_highlight" id="bid_confirm" data-hotkey="b"/>
+                </xpath>
+                <xpath expr="//button[@id='bid_confirm']" position="replace">
+                    <button name="button_confirm" type="object" states="sent" string="Confirm Order"
+                            attrs="{'invisible':['|',('x_studio_selection_field_m7jU2','!=','Approved'),('state','!=','sent')]}"
+                            class="oe_highlight" id="bid_confirm" data-hotkey="v"/>
+                </xpath>
+                <xpath expr="//button[@id='draft_confirm']" position="replace">
+                    <button name="button_confirm" type="object" string="Confirm Order"
+                            attrs="{'invisible':['|',('x_studio_selection_field_m7jU2','!=','Approved'),('state','!=','draft')]}"
+                            id="draft_confirm"/>
+                </xpath>
+<!--                <field name="partner_id" position="after">-->
+<!--                    <field name="is_approval_by_ceo" in />-->
+<!--                </field>-->
+            </field>
+        </record>
+
+        <record id="helpdesk_ticket_type_view_tree" model="ir.ui.view">
+            <field name="name">helpdesk.ticket.type.view.tree</field>
+            <field name="model">helpdesk.ticket.type</field>
+            <field name="inherit_id" ref="helpdesk.helpdesk_ticket_type_view_tree"/>
+            <field name="arch" type="xml">
+                <field name="name" position="after">
+                    <field name="time" optional="show" widget="float_time" />
+                </field>
+            </field>
+        </record>
+
+    </data>
+</odoo>
+
+
