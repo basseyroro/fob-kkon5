@@ -36,11 +36,11 @@ class PayrollApproval(models.Model):
     @api.onchange("payslip_id")
     @api.depends("payslip_id")
     def onchange_payslip_id(self):
-        total_paye = ["EMP PAYE"]
-        total_allowance = ["Allowance", "HZD Allowance"]
-        total_deduction = ["Deduction"]
+        total_paye = ["Monthly PAYE"]
+        total_allowance = ["Monthly Gross Income"]
+        total_deduction = ["Monthly PAYE", "Employee Pension Contribution","Loan Deduction","Surcharge"]
         total_net_salary = ["Net"]
-        total_pension = ["Total Pen", "EMP PAYE"]
+        total_pension = ["Total Pension"]
         vals = {'total_paye': 0, 'total_allowance': 0, 'total_deduction': 0, 'total_net_salary': 0, 'total_pension': 0}
         if self.payslip_id:
             vals['total_paye'] = sum(self.payslip_id.mapped("slip_ids").mapped("line_ids").filtered(lambda llm:llm.category_id.name in total_paye).mapped("total"))
