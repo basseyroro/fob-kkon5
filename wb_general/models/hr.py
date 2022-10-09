@@ -86,6 +86,7 @@ class Tickets(models.Model):
     _inherit = "helpdesk.ticket"
 
     exp_finish_date = fields.Datetime(string="~Expected Finish Date", compute="_onchange_sla_status_ids")
+    exp_finish_sla_date = fields.Datetime(string="~Expected Finish Date2", compute="_onchange_sla_status_ids")
 
     @api.onchange("sla_status_ids")
     def _onchange_sla_status_ids(self):
@@ -94,7 +95,17 @@ class Tickets(models.Model):
             for sla in rec.sla_status_ids:
                 if sla.sla_id.time:
                     today += timedelta(hours=sla.sla_id.time)
+            rec.exp_finish_sla_date = today
+            today = rec.create_date
+            if rec.ticket_type_id:
+                today += timedelta(hours=rec.ticket_type_id.time)
             rec.exp_finish_date = today
+
+
+class TicketType(models.Model):
+    _inherit = "helpdesk.ticket.type"
+
+    time = fields.Float('In', help='Time to reach given stage based on ticket creation date', default=0, required=True)
 
 
 class HRExpense(models.Model):

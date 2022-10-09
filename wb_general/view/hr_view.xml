@@ -54,6 +54,7 @@
             <field name="arch" type="xml">
                 <field name="sla_deadline" position="before">
                     <field name="exp_finish_date"/>
+                    <field name="exp_finish_sla_date"/>
                 </field>
             </field>
         </record>
@@ -90,7 +91,7 @@
             <field name="arch" type="xml">
                 <filter name="submitted" position="after">
                     <filter domain="[('state', '=', 'submit')]" string="Manager To Approve" name="approved_manager" help="Manager To Confirmed Expenses"/>
-                    <filter domain="[('state', '=', 'submit')]" string="Interal Audit To Approve" name="interal_audit" help="Interal Audit To Confirmed Expenses"/>
+                    <filter domain="[('state', '=', 'approved_manager')]" string="Interal Audit To Approve" name="interal_audit" help="Interal Audit To Confirmed Expenses"/>
                 </filter>
             </field>
         </record>
@@ -166,6 +167,17 @@
 <!--                <field name="partner_id" position="after">-->
 <!--                    <field name="is_approval_by_ceo" in />-->
 <!--                </field>-->
+            </field>
+        </record>
+
+        <record id="helpdesk_ticket_type_view_tree" model="ir.ui.view">
+            <field name="name">helpdesk.ticket.type.view.tree</field>
+            <field name="model">helpdesk.ticket.type</field>
+            <field name="inherit_id" ref="helpdesk.helpdesk_ticket_type_view_tree"/>
+            <field name="arch" type="xml">
+                <field name="name" position="after">
+                    <field name="time" optional="show" widget="float_time" />
+                </field>
             </field>
         </record>
 
