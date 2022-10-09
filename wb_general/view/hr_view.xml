@@ -136,7 +136,7 @@
 
         <menuitem id="menu_hr_expense_sheet_all_audit_to_approve"
                   name="Audit to Approve" sequence="1" parent="hr_expense.menu_hr_expense_report"
-                  action="action_hr_expense_sheet_all_manager_to_approve"
+                  action="action_hr_expense_sheet_all_audit_to_approve"
                   groups="hr_expense.group_hr_expense_team_approver"/>
 
         <record id="purchase_order_form" model="ir.ui.view">
