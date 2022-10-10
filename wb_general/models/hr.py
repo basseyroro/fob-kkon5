@@ -201,7 +201,8 @@ class Purchase(models.Model):
 
     def checkWritablePermission(self):
         not_editable = False
-        if self.x_studio_selection_field_m7jU2 != 'New' and not self.env.user.has_group('wb_general.po_editor_group'):
+        if self.x_studio_selection_field_m7jU2 in ("Awaiting CFO Approval","Awaiting MD Approval","Approved") \
+                and not self.env.user.has_group('wb_general.po_editor_group'):
             not_editable = True
         if not_editable:
             raise ValidationError(_("You don't have access rights to edit purchase order."))
